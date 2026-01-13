@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #0b0e14;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    display: block;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Customizing dat.gui to look more premium */
+.dg.main {
+    margin-right: 20px !important;
+    margin-top: 20px !important;
+}
+
+.dg .cr.number input[type=text] {
+    background: #1a1d23;
+    color: #e0e6ed;
+}
+
+.dg .property-name {
+    text-shadow: none;
+    color: #e0e6ed;
+}
+
+.dg .c .slider {
+    background: #2c313a;
+}
+
+.dg .c .slider:hover {
+    background: #3e4451;
+}
+
+.dg .c .slider-fg {
+    background: #4a9eff;
+}
