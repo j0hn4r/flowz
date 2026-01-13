@@ -1,9 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+
+:root {
+    --bg-color: #0b0e14;
+    --panel-bg: rgba(26, 29, 35, 0.85);
+    --accent-color: #4a9eff;
+    --text-color: #e0e6ed;
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #0b0e14;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-color);
+}
+
+#paper-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.15;
+    background-image: url('paper.png');
+    background-repeat: repeat;
+    display: none;
+    mix-blend-mode: multiply;
+}
+
+body.paper-theme #paper-overlay {
+    display: block;
+}
+
+body.paper-theme {
+    background-color: #ebe6dc;
 }
 
 #canvas-container {
@@ -12,37 +46,122 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: radial-gradient(circle at center, #1a1d23 0%, #0b0e14 100%);
 }
 
 canvas {
     display: block;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    transition: transform 0.3s ease;
+}
+
+/* UI Overlay */
+#ui-overlay {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    z-index: 100;
+    pointer-events: none;
+}
+
+#ui-overlay h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #aab 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.9;
+}
+
+#ui-overlay p {
+    font-size: 0.9rem;
+    font-weight: 300;
+    margin: 5px 0 0 0;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Customizing lil-gui */
+.lil-gui {
+    --background-color: var(--panel-bg);
+    --text-color: var(--text-color);
+    --title-background-color: rgba(44, 49, 58, 0.9);
+    --widget-color: #2c313a;
+    --hover-color: #3e4451;
+    --focus-color: var(--accent-color);
+    --number-color: var(--accent-color);
+    --string-color: #a8d1ff;
+
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Customizing dat.gui to look more premium */
-.dg.main {
-    margin-right: 20px !important;
-    margin-top: 20px !important;
+.lil-gui .title {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    padding: 10px 15px;
 }
 
-.dg .cr.number input[type=text] {
-    background: #1a1d23;
-    color: #e0e6ed;
+.lil-gui .controller {
+    padding: 4px 12px;
 }
 
-.dg .property-name {
-    text-shadow: none;
-    color: #e0e6ed;
+.lil-gui .name {
+    font-weight: 300;
+    font-size: 0.85rem;
 }
 
-.dg .c .slider {
-    background: #2c313a;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-.dg .c .slider:hover {
-    background: #3e4451;
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.dg .c .slider-fg {
-    background: #4a9eff;
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Loading Indicator */
+#loading {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(74, 158, 255, 0.2);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

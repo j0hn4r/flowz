@@ -4,20 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow Fields | Tyler Hobbs Style</title>
+    <title>Flowz | Generative Art Engine</title>
+    <meta name="description"
+        content="A premium generative art engine inspired by Tyler Hobbs, featuring complex flow fields and organic textures.">
     <link rel="stylesheet" href="style.css">
-    <!-- p5.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-    <!-- simplex-noise for better noise quality -->
-    <script src="https://cdn.jsdelivr.net/npm/simplex-noise@2.4.0/simplex-noise.min.js"></script>
-    <!-- dat.gui for controls -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
 </head>
 
 <body>
+    <div id="paper-overlay"></div>
+    <div id="ui-overlay">
+        <h1>Flowz</h1>
+        <p>Generative Art Engine</p>
+    </div>
+
     <div id="canvas-container"></div>
-    <div id="ui-container"></div>
-    <script src="sketch.js"></script>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <span>Generating field...</span>
+    </div>
+
+    <script type="module" src="sketch.js"></script>
 </body>
 
 </html>
