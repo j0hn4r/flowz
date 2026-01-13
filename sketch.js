@@ -44,6 +44,38 @@ const palettes = {
     ]
 };
 
+const fidenzaScales = {
+    'Small': [
+        { min: 1, max: 2, weight: 0.8 },
+        { min: 3, max: 5, weight: 0.15 },
+        { min: 8, max: 12, weight: 0.05 }
+    ],
+    'Medium': [
+        { min: 1, max: 3, weight: 0.15 },
+        { min: 4, max: 8, weight: 0.75 },
+        { min: 10, max: 16, weight: 0.1 }
+    ],
+    'Large': [
+        { min: 2, max: 6, weight: 0.1 },
+        { min: 12, max: 24, weight: 0.75 },
+        { min: 30, max: 50, weight: 0.15 }
+    ],
+    'Jumbo': [
+        { min: 4, max: 10, weight: 0.1 },
+        { min: 30, max: 60, weight: 0.8 },
+        { min: 70, max: 100, weight: 0.1 }
+    ],
+    'Jumbo XL': [
+        { min: 80, max: 150, weight: 1.0 }
+    ],
+    'Uniform': [
+        { min: 6, max: 6, weight: 1.0 }
+    ],
+    'Micro-Uniform': [
+        { min: 0.5, max: 0.5, weight: 1.0 }
+    ]
+};
+
 const settings = {
     noiseScale: 0.005,
     octaves: 1,
@@ -55,10 +87,12 @@ const settings = {
     numCurves: 1500,
     steps: 100,
     stepLength: 2,
-    thicknessMode: 'constant',
+    thicknessMode: 'fidenza',
+    fidenzaScale: 'Jumbo',
     minThickness: 0.5,
     maxThickness: 5,
     strokeWeight: 1,
+    strokeCap: 'round',
     opacity: 150,
     tapering: true,
     taperStrength: 0.5,
@@ -118,10 +152,12 @@ function setup() {
     f2.add(settings, 'stepLength', 0.5, 10).name('Step Length');
 
     const f3 = gui.addFolder('Thickness & Style');
-    f3.add(settings, 'thicknessMode', ['constant', 'random', 'noise']).name('Thickness Mode');
+    f3.add(settings, 'thicknessMode', ['constant', 'fidenza', 'random', 'noise']).name('Thickness Mode');
+    f3.add(settings, 'fidenzaScale', Object.keys(fidenzaScales)).name('Fidenza Scale');
     f3.add(settings, 'minThickness', 0.1, 10).name('Min Thickness');
     f3.add(settings, 'maxThickness', 0.1, 20).name('Max Thickness');
     f3.add(settings, 'strokeWeight', 0.1, 10).name('Base Weight');
+    f3.add(settings, 'strokeCap', ['round', 'square', 'project']).name('Stroke Cap').onChange(() => initFlowField());
     f3.add(settings, 'opacity', 0, 255).name('Opacity');
     f3.add(settings, 'tapering').name('Tapering');
     f3.add(settings, 'taperStrength', 0, 1).name('Taper Strength');
@@ -282,13 +318,36 @@ function drawCurve(startX, startY, curveID) {
 
     // Calculate thickness for this curve
     let weight = settings.strokeWeight;
-    if (settings.thicknessMode === 'random') {
+    if (settings.thicknessMode === 'fidenza') {
+        const bins = fidenzaScales[settings.fidenzaScale];
+        let r = random();
+        let cumulative = 0;
+        let selectedBin = bins[0];
+        for (const bin of bins) {
+            cumulative += bin.weight;
+            if (r < cumulative) {
+                selectedBin = bin;
+                break;
+            }
+        }
+        weight = random(selectedBin.min, selectedBin.max);
+    } else if (settings.thicknessMode === 'random') {
         weight = random(settings.minThickness, settings.maxThickness);
     } else if (settings.thicknessMode === 'noise') {
         let n = fBm(startX * 0.005, startY * 0.005);
         weight = map(n, -1, 1, settings.minThickness, settings.maxThickness);
     }
     strokeWeight(weight);
+    if (settings.strokeCap === 'round') {
+        strokeCap(ROUND);
+        strokeJoin(ROUND);
+    } else if (settings.strokeCap === 'square') {
+        strokeCap(SQUARE);
+        strokeJoin(BEVEL);
+    } else if (settings.strokeCap === 'project') {
+        strokeCap(PROJECT);
+        strokeJoin(MITER);
+    }
 
     // Color logic
     if (settings.colorMode === 'palette') {
