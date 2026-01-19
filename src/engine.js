@@ -745,9 +745,8 @@ export class CurveManager {
                 }
             }
 
-            points.push({ x, y, weight: currentWeight });
-
             let angle = this.flowField.getInterpolatedAngle(gridX, gridY);
+            points.push({ x, y, weight: currentWeight, angle });
             x += settings.stepLength * Math.cos(angle) * direction;
             y += settings.stepLength * Math.sin(angle) * direction;
         }
@@ -813,6 +812,15 @@ export class CurveManager {
                 x2 += p.random(-off, off); y2 += p.random(-off, off);
             }
 
+            // Draw with overlap for square caps to prevent gaps
+            if (settings.strokeCap !== 'round' && p1.angle !== undefined) {
+                const overlap = 0.5;
+                const ox = Math.cos(p1.angle) * overlap;
+                const oy = Math.sin(p1.angle) * overlap;
+                x2 += ox;
+                y2 += oy;
+            }
+
             if (settings.grainDensity > 0 && p.random() < settings.grainDensity) {
                 if (p.random() > 0.1) p.line(x1, y1, x2, y2);
             } else {
@@ -825,6 +833,7 @@ export class CurveManager {
         const p = this.p;
         const settings = this.settings;
 
+        this.setStyle(settings.strokeCap);
         const shadowCol = p.color(0, settings.shadowOpacity * 255);
         p.stroke(shadowCol);
         p.drawingContext.shadowBlur = settings.shadowBlur;
@@ -836,7 +845,16 @@ export class CurveManager {
             const p1 = curve.points[i - 1];
             const p2 = curve.points[i];
             p.strokeWeight(p2.weight);
-            p.line(p1.x + off, p1.y + off, p2.x + off, p2.y + off);
+
+            let x1 = p1.x + off, y1 = p1.y + off, x2 = p2.x + off, y2 = p2.y + off;
+            if (settings.strokeCap !== 'round' && p1.angle !== undefined) {
+                const overlap = 0.5;
+                const ox = Math.cos(p1.angle) * overlap;
+                const oy = Math.sin(p1.angle) * overlap;
+                x2 += ox;
+                y2 += oy;
+            }
+            p.line(x1, y1, x2, y2);
         }
 
         // Reset drawing context for performance
@@ -850,6 +868,7 @@ export class CurveManager {
         const layers = settings.watercolorBlobs;
         const baseColor = curve.color;
 
+        this.setStyle(settings.strokeCap);
         for (let l = 0; l < layers; l++) {
             const layerOpacity = p.alpha(baseColor) / layers;
             p.stroke(p.red(baseColor), p.green(baseColor), p.blue(baseColor), layerOpacity);
@@ -863,7 +882,16 @@ export class CurveManager {
                 const posOff = p.random(-1, 1) * (l * 0.5);
 
                 p.strokeWeight(p2.weight + weightOff);
-                p.line(p1.x + posOff, p1.y + posOff, p2.x + posOff, p2.y + posOff);
+
+                let x1 = p1.x + posOff, y1 = p1.y + posOff, x2 = p2.x + posOff, y2 = p2.y + posOff;
+                if (settings.strokeCap !== 'round' && p1.angle !== undefined) {
+                    const overlap = 0.5;
+                    const ox = Math.cos(p1.angle) * overlap;
+                    const oy = Math.sin(p1.angle) * overlap;
+                    x2 += ox;
+                    y2 += oy;
+                }
+                p.line(x1, y1, x2, y2);
             }
         }
     }
@@ -904,7 +932,7 @@ export class CurveManager {
             p.strokeJoin(p.ROUND);
         } else if (cap === 'square') {
             p.strokeCap(p.SQUARE);
-            p.strokeJoin(p.BEVEL);
+            p.strokeJoin(p.MITER);
         } else if (cap === 'project') {
             p.strokeCap(p.PROJECT);
             p.strokeJoin(p.MITER);
