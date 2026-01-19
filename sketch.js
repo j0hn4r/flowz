@@ -1,9 +1,6 @@
 import p5 from 'p5';
 import { createNoise2D } from 'simplex-noise';
-import { FlowField } from './src/Core/FlowField.js';
-import { CurveManager } from './src/Core/CurveManager.js';
-import { settings, setupGUI } from './src/Config/Settings.js';
-import { mulberry32 } from './src/Utils/Math.js';
+import { FlowField, CurveManager, settings, setupGUI, mulberry32, palettes } from './src/engine.js';
 
 new p5((p) => {
     let flowField;
